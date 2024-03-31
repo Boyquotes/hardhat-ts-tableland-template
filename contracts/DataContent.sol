@@ -8,10 +8,10 @@ import {TablelandDeployments} from "@tableland/evm/contracts/utils/TablelandDepl
 import {SQLHelpers} from "@tableland/evm/contracts/utils/SQLHelpers.sol";
 import {ERC721Holder} from "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 
-// Starter template for contract owned and controlled tables
-contract Starter is TablelandController, ERC721Holder {
+// DataContent template for contract owned and controlled tables
+contract DataContent is TablelandController, ERC721Holder {
     uint256 private tableId; // Unique table ID
-    string private constant _TABLE_PREFIX = "starter_table"; // Custom table prefix
+    string private constant _TABLE_PREFIX = "DataContent"; // Custom table prefix
 
     // Constructor that creates a table, sets the controller, and inserts data
     constructor() {
@@ -20,7 +20,7 @@ contract Starter is TablelandController, ERC721Holder {
             address(this),
             SQLHelpers.toCreateFromSchema(
                 "id integer primary key,"
-                "val text",
+                "input text,output text,processHash text,format text",
                 _TABLE_PREFIX
             )
         );
@@ -38,24 +38,24 @@ contract Starter is TablelandController, ERC721Holder {
     }
 
     // Insert a row into the table from an external call (`id` will autoincrement)
-    function insertVal(string memory val) external {
+    function insertInput(string memory input) external {
         TablelandDeployments.get().mutate(
             address(this),
             tableId,
             SQLHelpers.toInsert(
                 _TABLE_PREFIX,
                 tableId,
-                "val",
-                SQLHelpers.quote(val) // Wrap strings in single quotes with the `quote` method
+                "input",
+                SQLHelpers.quote(input) // Wrap strings in single quotes with the `quote` method
             )
         );
     }
 
-    // Update a row in the table from an external call (set `val` at any `id`)
-    function updateVal(uint64 id, string memory val) external {
-        string memory setters = string.concat("val=", SQLHelpers.quote(val));
+    // Update a row in the table from an external call (set `input` at any `id`)
+    function updateInput(uint64 id, string memory input) external {
+        string memory setters = string.concat("input=", SQLHelpers.quote(input));
         string memory filters = string.concat("id=", Strings.toString(id));
-        // Mutate a row at `id` with a new `val`
+        // Mutate a row at `id` with a new `input`
         TablelandDeployments.get().mutate(
             address(this),
             tableId,
@@ -64,7 +64,44 @@ contract Starter is TablelandController, ERC721Holder {
     }
 
     // Delete a row in the table from an external call (delete at any `id`)
-    function deleteVal(uint64 id) external {
+    function deleteInput(uint64 id) external {
+        string memory filters = string.concat("id=", Strings.toString(id));
+        // Mutate by deleting the row at `id`
+        TablelandDeployments.get().mutate(
+            address(this),
+            tableId,
+            SQLHelpers.toDelete(_TABLE_PREFIX, tableId, filters)
+        );
+    }
+
+    // Insert a row into the table from an external call (`id` will autoincrement)
+    function insertOutput(string memory output) external {
+        TablelandDeployments.get().mutate(
+            address(this),
+            tableId,
+            SQLHelpers.toInsert(
+                _TABLE_PREFIX,
+                tableId,
+                "output",
+                SQLHelpers.quote(output) // Wrap strings in single quotes with the `quote` method
+            )
+        );
+    }
+
+    // Update a row in the table from an external call (set `output` at any `id`)
+    function updateOutput(uint64 id, string memory output) external {
+        string memory setters = string.concat("output=", SQLHelpers.quote(output));
+        string memory filters = string.concat("id=", Strings.toString(id));
+        // Mutate a row at `id` with a new `output`
+        TablelandDeployments.get().mutate(
+            address(this),
+            tableId,
+            SQLHelpers.toUpdate(_TABLE_PREFIX, tableId, setters, filters)
+        );
+    }
+
+    // Delete a row in the table from an external call (delete at any `id`)
+    function deleteOutput(uint64 id) external {
         string memory filters = string.concat("id=", Strings.toString(id));
         // Mutate by deleting the row at `id`
         TablelandDeployments.get().mutate(
@@ -79,9 +116,9 @@ contract Starter is TablelandController, ERC721Holder {
         address,
         uint256
     ) public payable override returns (TablelandPolicy memory) {
-        // Restrict updates to a single column, e.g., `val`
+        // Restrict updates to a single column, e.g., `input`
         string[] memory updatableColumns = new string[](1);
-        updatableColumns[0] = "val";
+        updatableColumns[0] = "input";
         // Return the policy
         return
             TablelandPolicy({
