@@ -1,3 +1,15 @@
+CRYPTO NEWS DOCUMENTATION
+```
+npm i
+npm run deploy:up
+npm install -g @tableland/cli
+tableland -c local-tableland -k 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 read "SELECT * FROM DataContent_31337_2;
+tableland -c local-tableland -k 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 write "INSERT INTO DataContent_31337_2 VALUES (1, 'inputTest', 'outputTest', 'processHashTest', 'formatTest');"
+```
+
+
+OFFICIAL DOCUMENTATION
+
 # Tableland Hardhat TypeScript Template
 
 > Hardhat TypeScript starter template for @tableland applications
